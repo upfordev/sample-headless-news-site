@@ -1,7 +1,5 @@
 # Sample Headless News Site
 
-[![Netlify Status](https://api.netlify.com/api/v1/badges/your-netlify-id/deploy-status)](https://app.netlify.com/sites/sample-headless-news/deploys)
-
 **[Live Demo](https://sample-headless-news.netlify.app/)**
 
 ## Overview
@@ -86,10 +84,12 @@ This project is set up for continuous deployment using GitHub Actions and Netlif
 ### Setup Instructions
 
 1. **Create a Netlify Account**
+
    - Sign up at [netlify.com](https://www.netlify.com/)
    - Connect your GitHub account
 
 2. **Deploy Your Site**
+
    - From the Netlify dashboard, click "Add new site" → "Import an existing project"
    - Select your GitHub repository
    - Configure build settings:
@@ -97,6 +97,7 @@ This project is set up for continuous deployment using GitHub Actions and Netlif
      - Publish directory: `dist`
 
 3. **Set Up GitHub Secrets**
+
    - Go to your GitHub repository → Settings → Secrets and variables → Actions
    - Add the following secrets:
      - `NETLIFY_AUTH_TOKEN`: Your Netlify personal access token (create one in Netlify User Settings → Applications)
