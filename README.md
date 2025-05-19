@@ -1,5 +1,9 @@
 # Sample Headless News Site
 
+[![Netlify Status](https://api.netlify.com/api/v1/badges/your-netlify-id/deploy-status)](https://app.netlify.com/sites/sample-headless-news/deploys)
+
+**[Live Demo](https://sample-headless-news.netlify.app/)**
+
 ## Overview
 
 This project is a Proof of Concept demonstrating how to connect a headless Arc XP View API with an Astro frontend. It showcases a modern, responsive news website that simulates fetching content from Arc XP's content management system.
