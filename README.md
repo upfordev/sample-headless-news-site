@@ -75,6 +75,33 @@ All commands are run from the root of the project, from a terminal:
 | `npm run build`   | Build your production site to `./dist/`      |
 | `npm run preview` | Preview your build locally, before deploying |
 
+## Deployment
+
+This project is set up for continuous deployment using GitHub Actions and Netlify.
+
+### Setup Instructions
+
+1. **Create a Netlify Account**
+   - Sign up at [netlify.com](https://www.netlify.com/)
+   - Connect your GitHub account
+
+2. **Deploy Your Site**
+   - From the Netlify dashboard, click "Add new site" → "Import an existing project"
+   - Select your GitHub repository
+   - Configure build settings:
+     - Build command: `npm run build`
+     - Publish directory: `dist`
+
+3. **Set Up GitHub Secrets**
+   - Go to your GitHub repository → Settings → Secrets and variables → Actions
+   - Add the following secrets:
+     - `NETLIFY_AUTH_TOKEN`: Your Netlify personal access token (create one in Netlify User Settings → Applications)
+     - `NETLIFY_SITE_ID`: Your Netlify site ID (found in Site Settings → General → Site details → API ID)
+
+4. **Automatic Deployments**
+   - The GitHub Actions workflow (`.github/workflows/deploy.yml`) will automatically deploy your site when you push to the main branch
+   - Pull requests will generate preview deployments
+
 ## Future Enhancements
 
 - Integration with actual Arc XP Content API
