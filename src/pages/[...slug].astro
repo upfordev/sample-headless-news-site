@@ -1,0 +1,133 @@
+---
+import type { ANSArticle } from '../lib/types/ans';
+import { MockViewAPI } from '../lib/services/mockViewAPI';
+import Navigation from '../components/Navigation.astro';
+import ArticleContent from '../components/ArticleContent.astro';
+
+export async function getStaticPaths() {
+  const api = MockViewAPI.getInstance();
+  const allArticles = await api.getAllArticles();
+
+  return allArticles.map(article => {
+    // Use the website_url as the slug, removing the leading slash
+    const slug = article.website_url.substring(1);
+
+    return {
+      params: { slug },
+      props: { article }
+    };
+  });
+}
+
+const { article } = Astro.props;
+
+// Format the publish date
+const publishDate = new Date(article.created_date);
+const formattedDate = publishDate.toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric'
+});
+
+// Get the main image
+const mainImage = article.promo_items?.basic;
+
+// Get the author
+const author = article.credits?.by?.[0];
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{article.headlines.basic}</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,400;0,700;1,400&family=Open+Sans:wght@400;600;700&display=swap">
+</head>
+<body class="bg-white text-gray-900">
+  <Navigation />
+  
+  <main class="max-w-4xl mx-auto px-4 sm:px-6 py-8">
+    <!-- Article Hero -->
+    <div class="mb-10 max-w-3xl mx-auto">
+      <div class="mb-6 text-sm uppercase tracking-wider font-semibold text-blue-600">
+        <a href={article.taxonomy.sections[0]?.path} class="hover:underline">
+          {article.taxonomy.sections[0]?.name}
+        </a>
+      </div>
+      
+      <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-6 leading-tight font-serif">
+        {article.headlines.basic}
+      </h1>
+
+      {article.description?.basic && (
+        <p class="text-xl text-gray-700 mb-6 font-serif leading-relaxed">
+          {article.description.basic}
+        </p>
+      )}
+
+      <div class="flex items-center text-sm text-gray-600 mb-8 border-b border-gray-200 pb-6">
+        {author && (
+          <div class="mr-4">
+            By <span class="font-semibold text-gray-900">{author.name}</span>
+            {author.bio && (
+              <span class="mx-1 text-gray-400">•</span>
+              <span class="text-gray-600">{author.bio}</span>
+            )}
+          </div>
+        )}
+        <span class="text-gray-400 mx-2">•</span>
+        <time datetime={article.created_date} class="text-gray-600">{formattedDate}</time>
+      </div>
+      
+      {mainImage && (
+        <div class="relative aspect-[16/9] mb-10">
+          <img
+            src={mainImage.url}
+            alt={mainImage.caption || ''}
+            class="w-full h-full object-cover rounded-lg shadow-md"
+          />
+          {mainImage.caption && (
+            <p class="text-sm text-gray-500 mt-2 italic text-center">{mainImage.caption}</p>
+          )}
+        </div>
+      )}
+    </div>
+
+    <!-- Article Content -->
+    <ArticleContent contentElements={article.content_elements} />
+    
+    <!-- Article Footer -->
+    <div class="mt-12 pt-6 border-t border-gray-200 max-w-3xl mx-auto">
+      <div class="flex flex-wrap gap-2 mb-6">
+        {article.taxonomy.tags.map(tag => (
+          <a href={`/tag/${tag.slug}`} class="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full hover:bg-gray-200 transition">
+            {tag.text}
+          </a>
+        ))}
+      </div>
+      
+      {author && (
+        <div class="flex items-start space-x-4 p-6 bg-gray-50 rounded-lg">
+          <div class="flex-1">
+            <p class="font-semibold text-lg">{author.name}</p>
+            {author.bio && <p class="text-gray-600 mt-1">{author.bio}</p>}
+          </div>
+        </div>
+      )}
+    </div>
+  </main>
+</body>
+</html>
+
+<style>
+  /* Add serif font for article content */
+  .font-serif {
+    font-family: 'Merriweather', serif;
+  }
+  
+  body {
+    font-family: 'Open Sans', sans-serif;
+    line-height: 1.6;
+  }
+</style>

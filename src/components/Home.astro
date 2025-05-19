@@ -1,0 +1,115 @@
+---
+import type { ANSArticle, ANSCollection } from '../lib/types/ans';
+import { MockViewAPI } from '../lib/services/mockViewAPI';
+import StoryCard from './StoryCard.astro';
+
+const api = MockViewAPI.getInstance();
+
+// Fetch top stories collection
+const topStoriesResponse = await api.getCollectionById('0');
+const topStories = topStoriesResponse?.collection;
+
+// Get IDs of articles in top stories to exclude from other sections
+const topStoryIds = topStories?.content_elements.map((article: ANSArticle) => article._id) || [];
+
+// Fetch other collections
+const collections = [
+  { id: '1', name: 'Technology' },
+  { id: '2', name: 'Business' },
+  { id: '3', name: 'Politics' },
+  { id: '4', name: 'Sports' },
+];
+
+// Track displayed article IDs to avoid duplication
+const displayedArticleIds = new Set<string>();
+
+// Helper function to mark an article as displayed
+function markArticleDisplayed(article: ANSArticle) {
+  displayedArticleIds.add(article._id);
+}
+
+// Add top stories article IDs to the tracking set
+if (topStories) {
+  topStories.content_elements.forEach(markArticleDisplayed);
+}
+
+// Fetch and process collections
+const filteredCollections = await Promise.all(
+  collections.map(async ({ id, name }) => {
+    const response = await api.getCollectionById(id);
+    if (!response?.collection) return null;
+    
+    const collection = response.collection;
+    
+    // Filter out articles that have already been displayed
+    collection.content_elements = collection.content_elements.filter(
+      (article: ANSArticle) => !displayedArticleIds.has(article._id) && !topStoryIds.includes(article._id)
+    );
+
+    // Mark remaining articles as displayed
+    collection.content_elements.forEach(markArticleDisplayed);
+
+    return collection;
+  })
+).then(collections => collections.filter((collection): collection is ANSCollection => collection !== null));
+
+---
+
+<section class="max-w-7xl mx-auto px-4 space-y-12">
+  <!-- Top Stories Section -->
+  {topStories && (
+    <div class="mb-12">
+      <div class="section-title--container relative mb-8">
+        <div class="flex justify-between items-baseline border-b-[3px] border-black pb-1">
+          <h2 class="text-[32px] font-extrabold uppercase tracking-tight">
+            {topStories.name}
+          </h2>
+        </div>
+        <div class="absolute bottom-0 left-0 w-24 h-[3px] bg-red-700"></div>
+      </div>
+
+      <!-- Featured Article (First article in Top Stories) -->
+      {topStories.content_elements[0] && (
+        <StoryCard article={topStories.content_elements[0]} isHero={true} />
+      )}
+
+      <!-- Other Top Stories -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
+        {topStories.content_elements.slice(1, 4).map((article: ANSArticle) => (
+          <StoryCard article={article} />
+        ))}
+      </div>
+    </div>
+  )}
+
+  <!-- Category Collections -->
+  {filteredCollections.map((collection) => (
+    <div class="mb-16">
+      <div class="section-title--container relative mb-8">
+        <div class="flex justify-between items-baseline border-b-[3px] border-black pb-1">
+          <h2 class="text-[32px] font-extrabold uppercase tracking-tight">
+            <a 
+              href={"/" + collection.name.toLowerCase()} 
+              class="text-black hover:text-red-700 transition-colors"
+            >
+              {collection.name}
+            </a>
+          </h2>
+          <a 
+            href={"/" + collection.name.toLowerCase()} 
+            class="text-sm font-bold uppercase text-red-700 hover:text-black transition-colors"
+          >
+            More {collection.name} →
+          </a>
+        </div>
+        <div class="absolute bottom-0 left-0 w-24 h-[3px] bg-red-700"></div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {collection.content_elements.slice(0, 3).map((article: ANSArticle) => (
+          <StoryCard article={article} />
+        ))}
+      </div>
+    </div>
+  ))}
+</section>

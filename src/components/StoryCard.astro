@@ -1,0 +1,67 @@
+---
+import type { ANSArticle } from '../lib/types/ans';
+
+interface Props {
+  article: ANSArticle;
+  isHero?: boolean;
+}
+
+const { article, isHero = false } = Astro.props;
+---
+
+{isHero ? (
+  <div class="bg-white overflow-hidden">
+    {article.promo_items?.basic && (
+      <a href={article.website_url.startsWith('/') ? article.website_url : `/${article.website_url}`} class="block relative h-[500px] w-full hover:opacity-90 transition-opacity">
+        <img
+          src={article.promo_items.basic.url}
+          alt={article.promo_items.basic.caption || article.headlines.basic}
+          class="w-full h-full object-cover"
+        />
+        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-8">
+          <h1 class="text-4xl font-extrabold text-white mb-4 leading-tight">
+            {article.headlines.basic}
+          </h1>
+          <p class="text-xl text-gray-200 mb-6 max-w-3xl">
+            {article.description.basic}
+          </p>
+          {article.credits?.by?.[0] && (
+            <span class="text-sm text-gray-300 font-medium">
+              By {article.credits.by[0].name}
+            </span>
+          )}
+        </div>
+      </a>
+    )}
+  </div>
+) : (
+  <article class="group">
+    {article.promo_items?.basic && (
+      <a href={article.website_url.startsWith('/') ? article.website_url : `/${article.website_url}`} class="block relative aspect-[4/3] w-full mb-4">
+        <img
+          src={article.promo_items.basic.url}
+          alt={article.promo_items.basic.caption || article.headlines.basic}
+          class="w-full h-full object-cover group-hover:opacity-90 transition-opacity"
+        />
+      </a>
+    )}
+    <div class="space-y-3">
+      <h2 class="text-xl font-bold leading-tight">
+        <a href={article.website_url.startsWith('/') ? article.website_url : `/${article.website_url}`} class="group-hover:text-red-700 transition-colors">
+          {article.headlines.basic}
+        </a>
+      </h2>
+      <p class="text-gray-600 text-sm leading-snug line-clamp-2">{article.description.basic}</p>
+      <div class="flex items-center text-xs text-gray-500 uppercase tracking-wider">
+        {article.credits?.by?.[0] && (
+          <span class="after:content-['•'] after:mx-2">
+            By {article.credits.by[0].name}
+          </span>
+        )}
+        <span>
+          {new Date(article.created_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+        </span>
+      </div>
+    </div>
+  </article>
+)}
