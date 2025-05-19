@@ -38,9 +38,9 @@ const filteredCollections = await Promise.all(
   collections.map(async ({ id, name }) => {
     const response = await api.getCollectionById(id);
     if (!response?.collection) return null;
-    
+
     const collection = response.collection;
-    
+
     // Filter out articles that have already been displayed
     collection.content_elements = collection.content_elements.filter(
       (article: ANSArticle) => !displayedArticleIds.has(article._id) && !topStoryIds.includes(article._id)
@@ -59,15 +59,6 @@ const filteredCollections = await Promise.all(
   <!-- Top Stories Section -->
   {topStories && (
     <div class="mb-12">
-      <div class="section-title--container relative mb-8">
-        <div class="flex justify-between items-baseline border-b-[3px] border-black pb-1">
-          <h2 class="text-[32px] font-extrabold uppercase tracking-tight">
-            {topStories.name}
-          </h2>
-        </div>
-        <div class="absolute bottom-0 left-0 w-24 h-[3px] bg-red-700"></div>
-      </div>
-
       <!-- Featured Article (First article in Top Stories) -->
       {topStories.content_elements[0] && (
         <StoryCard article={topStories.content_elements[0]} isHero={true} />
@@ -88,15 +79,15 @@ const filteredCollections = await Promise.all(
       <div class="section-title--container relative mb-8">
         <div class="flex justify-between items-baseline border-b-[3px] border-black pb-1">
           <h2 class="text-[32px] font-extrabold uppercase tracking-tight">
-            <a 
-              href={"/" + collection.name.toLowerCase()} 
+            <a
+              href={"/" + collection.name.toLowerCase()}
               class="text-black hover:text-red-700 transition-colors"
             >
               {collection.name}
             </a>
           </h2>
-          <a 
-            href={"/" + collection.name.toLowerCase()} 
+          <a
+            href={"/" + collection.name.toLowerCase()}
             class="text-sm font-bold uppercase text-red-700 hover:text-black transition-colors"
           >
             More {collection.name} →
