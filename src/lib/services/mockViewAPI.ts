@@ -928,16 +928,6 @@ const mockCollections: ANSCollection[] = [
             },
           ],
         },
-        credits: {
-          by: [
-            {
-              _id: 'author20',
-              type: 'author',
-              name: 'Elena Petrova',
-              bio: 'Olympic Sports Reporter',
-            },
-          ],
-        },
         canonical_url: '/sports/2025/05/16/winter-olympics-preparations',
         website_url: '/sports/2025/05/16/winter-olympics-preparations',
       }
